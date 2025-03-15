@@ -221,6 +221,17 @@ const Predictor = () => {
     setTempName(newName);
   };
 
+  const handleNameKeyDown = (e, currentId) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      savePlayerName(currentId);
+      // Move to next player when Enter is pressed
+      if (currentId < 8) {
+        startEditName(currentId + 1);
+      }
+    }
+  };
+
   const isDeterministic = (round) => {
     return round === 3 || round === 5 || round === 6 || round === 7;
   };
@@ -460,12 +471,15 @@ const Predictor = () => {
             <div className="space-y-2">
               {/* You (P1) card */}
               <div className="p-2 transition-all duration-300 border rounded-lg shadow-lg bg-gradient-to-br from-violet-900/80 to-indigo-900/80 border-violet-500/50 hover:border-violet-400 hover:shadow-violet-500/20">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center">
+                  <div className="flex-1">
                     <span className="text-xs font-semibold text-violet-300">
                       You
                     </span>
-                    <div className="text-base font-medium text-white">
+                    <div
+                      className="text-base font-medium text-white cursor-pointer"
+                      onClick={() => !editingName && startEditName(1)}
+                    >
                       {editingName === 1 ? (
                         <input
                           type="text"
@@ -474,21 +488,13 @@ const Predictor = () => {
                           className="w-full p-1 text-base font-medium text-white border rounded outline-none bg-gray-700/90 border-violet-500/50 focus:border-violet-400"
                           autoFocus
                           onBlur={() => savePlayerName(1)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && savePlayerName(1)
-                          }
+                          onKeyDown={(e) => handleNameKeyDown(e, 1)}
                         />
                       ) : (
                         playerNames[1]
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() => startEditName(1)}
-                    className="px-2 py-1 text-xs text-white transition-colors rounded shadow-md bg-violet-700 hover:bg-violet-600"
-                  >
-                    {t.changeName}
-                  </button>
                 </div>
               </div>
 
@@ -502,19 +508,20 @@ const Predictor = () => {
                       : "bg-gray-800/90 border-gray-600/50 hover:border-gray-500 hover:shadow-indigo-500/10"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex items-center">
+                    <div className="flex-1">
                       {id === firstOpponentId && (
                         <span className="text-xs font-semibold text-violet-300">
                           {t.firstOpponent}
                         </span>
                       )}
                       <div
-                        className={`text-base font-medium ${
+                        className={`text-base font-medium cursor-pointer ${
                           id === firstOpponentId
                             ? "text-indigo-200"
                             : "text-gray-300"
                         }`}
+                        onClick={() => !editingName && startEditName(id)}
                       >
                         {editingName === id ? (
                           <input
@@ -528,28 +535,31 @@ const Predictor = () => {
                             }`}
                             autoFocus
                             onBlur={() => savePlayerName(id)}
-                            onKeyDown={(e) =>
-                              e.key === "Enter" && savePlayerName(id)
-                            }
+                            onKeyDown={(e) => handleNameKeyDown(e, id)}
                           />
                         ) : (
                           playerNames[id]
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={() => startEditName(id)}
-                      className={`px-2 py-1 text-xs text-white rounded transition-colors shadow-md ${
-                        id === firstOpponentId
-                          ? "bg-violet-700 hover:bg-violet-600"
-                          : "bg-gray-700 hover:bg-gray-600"
-                      }`}
-                    >
-                      {t.changeName}
-                    </button>
                   </div>
                 </div>
               ))}
+
+              {/* Add this hint text below player cards */}
+              <div className="mt-2 text-center">
+                <p className="text-xs italic text-gray-400">
+                  {language === "id"
+                    ? "Klik nama untuk mengganti"
+                    : "Click name to change"}
+                  <span className="ml-1 text-violet-400">•</span>
+                  <span className="ml-1 text-gray-400">
+                    {language === "id"
+                      ? "Enter untuk lanjut"
+                      : "Enter to continue"}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
