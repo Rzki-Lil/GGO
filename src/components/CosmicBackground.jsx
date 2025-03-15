@@ -36,18 +36,16 @@ const CosmicBackground = React.memo(() => {
           className="absolute animate-meteor"
           style={{
             top: `${Math.random() * 50}%`,
-            right: `${Math.random() * 70}%`, 
+            right: `${Math.random() * 70}%`,
             width: "2.5px",
             height: "2.5px",
             background: "white",
             boxShadow: "0 0 20px 2px white",
             animationDelay: `${i * 4}s`,
-            transform: "rotate(-45deg)", 
+            transform: "rotate(-45deg)",
           }}
         />
       ))}
-
-      
     </div>
   );
 });
