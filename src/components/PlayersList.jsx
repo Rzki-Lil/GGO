@@ -61,7 +61,6 @@ const PlayersList = memo(
     playerNames,
     firstOpponentId,
     t,
-    handleFirstOpponentChange,
     editingName,
     startEditName,
     savePlayerName,
@@ -72,37 +71,10 @@ const PlayersList = memo(
       <div className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-violet-500/30 hover:shadow-violet-500/10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">{t.players}</h2>
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-indigo-200">
-              {t.firstOpponent}
-            </label>
-            <select
-              value={firstOpponentId}
-              onChange={(e) => handleFirstOpponentChange(e.target.value)}
-              className="px-2 py-1 text-xs font-medium text-white transition-colors border rounded shadow-md bg-gray-800/90 border-violet-500/50 hover:border-violet-400"
-            >
-              {[2, 3, 4, 5, 6, 7, 8].map((id) => (
-                <option key={id} value={id}>
-                  {playerNames[id]}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         <div className="space-y-2">
-          <PlayerCard
-            id={1}
-            isFirst={false}
-            isEditing={editingName === 1}
-            playerName={playerNames[1]}
-            t={t}
-            onStartEdit={() => !editingName && startEditName(1)}
-            onSave={(e) => savePlayerName(1, e.target.value)}
-            onKeyDown={(e) => handleNameKeyDown(e, 1)}
-            onChange={(e) => setTempName(e.target.value)}
-          />
-
+          {/* Remove Player 1 (You) and only display players 2-8 */}
           {[2, 3, 4, 5, 6, 7, 8].map((id) => (
             <PlayerCard
               key={id}

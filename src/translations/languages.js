@@ -69,7 +69,7 @@ export const translations = {
   },
   id: {
     players: "Pemain",
-    firstOpponent: "Lawan Pertama:",
+    firstOpponent: "Lawan Pertama Kamu:",
     changeName: "Ubah Nama",
     matchInputs: "Input Pertandingan",
     resetMatches: "Reset",

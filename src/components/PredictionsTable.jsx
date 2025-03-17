@@ -1,24 +1,27 @@
 import React, { memo } from "react";
 import { isDeterministic } from "../utils/gameUtils";
 
-const TableRow = memo(({ round, player1Display, player8Display, noteText }) => (
-  <tr
-    className={`${
-      isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"
-    } hover:bg-gray-800/90 transition-colors`}
-  >
-    <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
-      {round}
-    </td>
-    <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
-      {player1Display}
-    </td>
-    <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
-      {player8Display}
-    </td>
-    <td className="px-3 py-2 text-sm text-gray-200">{noteText}</td>
-  </tr>
-));
+const TableRow = memo(({ round, player1Display, player8Display, noteText }) => {
+
+  return (
+    <tr
+      className={`${
+        isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"
+      } hover:bg-gray-800/90 transition-colors`}
+    >
+      <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
+        {round}
+      </td>
+      <td className="px-3 py-2 text-sm font-medium whitespace-nowrap text-emerald-300">
+        {player1Display}
+      </td>
+      <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
+        {player8Display}
+      </td>
+      <td className="px-3 py-2 text-sm text-gray-200">{noteText}</td>
+    </tr>
+  );
+});
 
 const PredictionsTable = memo(
   ({
@@ -68,6 +71,28 @@ const PredictionsTable = memo(
       }
     };
 
+    // Custom hook to modify opponent display for player1 to use green color
+    const getCustomOpponentDisplay = (player, round) => {
+      const display = getOpponentDisplay(player, round);
+
+      if (
+        player === "player1" &&
+        display &&
+        display.props &&
+        display.props.className.includes("text-indigo-300")
+      ) {
+        // Clone the element but with emerald-300 text color for your opponents
+        return React.cloneElement(display, {
+          className: display.props.className.replace(
+            "text-indigo-300",
+            "text-emerald-300"
+          ),
+        });
+      }
+
+      return display;
+    };
+
     return (
       <div className="mt-4 overflow-hidden border rounded-lg shadow-lg bg-gray-900/95 border-violet-500/30">
         <div className="px-4 py-2 bg-gradient-to-r from-violet-900/80 via-indigo-900/80 to-purple-900/80">
@@ -80,7 +105,7 @@ const PredictionsTable = memo(
                 <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
                   {t.round}
                 </th>
-                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
+                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-emerald-300">
                   {t.yourOpponent}
                 </th>
                 <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
@@ -97,7 +122,7 @@ const PredictionsTable = memo(
                   <TableRow
                     key={round}
                     round={round}
-                    player1Display={getOpponentDisplay("player1", round)}
+                    player1Display={getCustomOpponentDisplay("player1", round)}
                     player8Display={getOpponentDisplay("player8", round)}
                     noteText={getNoteText(round)}
                   />

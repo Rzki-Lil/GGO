@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { translations } from "./translations/languages";
 import {
-  isDeterministic,
   getAllUsedOpponents,
   getRound3Opponent,
   getFirstRound3Opponent,
@@ -21,9 +20,7 @@ const GradientTitle = React.lazy(() => import("./components/GradientTitle"));
 const HowToGuide = React.lazy(() => import("./components/HowToGuide"));
 const PlayersList = React.lazy(() => import("./components/PlayersList"));
 const MatchInputs = React.lazy(() => import("./components/MatchInputs"));
-const PredictionsTable = React.lazy(() =>
-  import("./components/PredictionsTable")
-);
+
 const Footer = React.lazy(() => import("./components/Footer"));
 
 const howToImages = Array.from({ length: 11 }, (_, i) => {
@@ -48,7 +45,7 @@ const Predictor = () => {
 
   const [playerNames, setPlayerNames] = useState({
     0: "cancel",
-    1: "You",
+    1: "You", 
     2: "Player 2",
     3: "Player 3",
     4: "Player 4",
@@ -138,7 +135,11 @@ const Predictor = () => {
       if (e.key === "Enter") {
         e.preventDefault();
         savePlayerName(currentId, e.target.value);
-        if (currentId < 8) startEditName(currentId + 1);
+        // Skip player 1 (You) when cycling through players with Enter key
+        if (currentId < 8) {
+          const nextId = currentId + 1;
+          startEditName(nextId === 1 ? 2 : nextId);
+        }
       }
     },
     [savePlayerName, startEditName]
@@ -167,6 +168,26 @@ const Predictor = () => {
 
           if (round3Opponent && round3OpponentR5Match) {
             newOpponents.player1[6] = round3OpponentR5Match;
+
+            // Auto-determine firstRound3OpponentR5Match if only one player remains
+            if (firstRound3Opponent && !firstRound3OpponentR5Match) {
+              const usedOpponents = getAllUsedOpponents(
+                opponents,
+                round3OpponentR5Match,
+                null
+              );
+
+              // Find all valid opponent options (1-8 except used ones and firstRound3Opponent)
+              const validOptions = [1, 2, 3, 4, 5, 6, 7, 8].filter(
+                (id) => id !== firstRound3Opponent && !usedOpponents.has(id)
+              );
+
+              // If only one valid option remains, automatically set it
+              if (validOptions.length === 1) {
+                newOpponents.player8[6] = validOptions[0];
+                setFirstRound3OpponentR5Match(validOptions[0]);
+              }
+            }
           }
 
           if (firstRound3Opponent && firstRound3OpponentR5Match) {
@@ -191,6 +212,7 @@ const Predictor = () => {
     currentRound,
     round3OpponentR5Match,
     firstRound3OpponentR5Match,
+    setFirstRound3OpponentR5Match,
   ]);
 
   useEffect(() => {
@@ -238,6 +260,7 @@ const Predictor = () => {
       firstRound3OpponentR5Match,
       setFirstRound3OpponentR5Match,
       handleOpponentChange,
+      handleFirstOpponentChange,
       resetMatchData,
     }),
     [
@@ -248,6 +271,7 @@ const Predictor = () => {
       firstRound3OpponentR5Match,
       setFirstRound3OpponentR5Match,
       handleOpponentChange,
+      handleFirstOpponentChange,
       resetMatchData,
     ]
   );

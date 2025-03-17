@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import PredictionsTable from "./PredictionsTable";
 import {
   isDeterministic,
@@ -32,6 +32,7 @@ const MatchInputs = ({
   firstRound3OpponentR5Match,
   setFirstRound3OpponentR5Match,
   handleOpponentChange,
+  handleFirstOpponentChange,
   resetMatchData,
 }) => {
   const getOpponentOptions = (playerNumber) => {
@@ -140,18 +141,32 @@ const MatchInputs = ({
         </button>
       </div>
 
-      {/* Non-deterministic rounds input */}
-      <div className="flex flex-wrap gap-4">
-        {/* Direct match in Round 1 */}
-        <div className="w-full p-3 mb-1 text-center transition-all duration-300 border rounded-lg shadow-lg bg-violet-900/40 border-violet-500/40">
-          <p className="text-sm font-medium text-indigo-100">
-            {t.directMatchText}{" "}
-            <span className="font-bold text-violet-300">
-              {playerNames[firstOpponentId]}
-            </span>
-          </p>
+      {/* First Opponent Selector - Full Width Row */}
+      <div className="w-full p-3 mb-4 transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 hover:border-violet-500/50">
+        <h3 className="mb-3 text-base font-bold text-white">
+          {t.firstOpponent}
+        </h3>
+        <div className="w-full">
+          <SelectedPlayer
+            playerId={firstOpponentId}
+            playerNames={playerNames}
+          />
+          <select
+            value={firstOpponentId}
+            onChange={(e) => handleFirstOpponentChange(e.target.value)}
+            className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
+          >
+            {[2, 3, 4, 5, 6, 7, 8].map((id) => (
+              <option key={id} value={id}>
+                {playerNames[id]}
+              </option>
+            ))}
+          </select>
         </div>
+      </div>
 
+      {/* Rounds 2 and 4 inputs in a separate flex container */}
+      <div className="flex flex-wrap gap-4">
         {/* Rounds 2 and 4 inputs */}
         {[2, 4].map((round) => (
           <div
@@ -205,8 +220,8 @@ const MatchInputs = ({
         ))}
       </div>
 
-      {/* Round 6 Helpers */}
-      <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+      {/* Round 6 Helpers - Only show the first helper */}
+      <div className="grid grid-cols-1 gap-4 mt-4">
         {/* Your R6 Helper */}
         {opponents.player1[3] && (
           <div className="p-3 overflow-hidden transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 animate-fadeIn hover:border-violet-500/50">
@@ -230,9 +245,11 @@ const MatchInputs = ({
                 onChange={(e) => {
                   if (e.target.value === "0") {
                     setRound3OpponentR5Match(null);
+                    setFirstRound3OpponentR5Match(null); // Reset second helper when first helper is canceled
                     setOpponents((prev) => {
                       const newOpponents = { ...prev };
                       newOpponents.player1[6] = null;
+                      newOpponents.player8[6] = null; // Also reset opponent's R6 selection
                       newOpponents.player1[7] = null;
                       newOpponents.player8[7] = null;
                       return newOpponents;
@@ -246,50 +263,6 @@ const MatchInputs = ({
                 className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
               >
                 {getOpponentOptions(opponents.player1[3])}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* First's R6 Helper */}
-        {opponents.player8[3] && (
-          <div className="p-3 overflow-hidden transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 animate-fadeIn hover:border-violet-500/50">
-            <h3 className="mb-2 text-sm font-bold text-violet-300">
-              {playerNames[firstOpponentId]}'s {t.r6Helper.first}
-            </h3>
-            <div className="space-y-2">
-              <div className="text-sm text-gray-200">
-                {t.r6Helper.theirR3}{" "}
-                <strong className="text-violet-200">
-                  {playerNames[opponents.player8[3]]}
-                </strong>
-                {t.r6Helper.r5Match}
-              </div>
-              <SelectedPlayer
-                playerId={firstRound3OpponentR5Match}
-                playerNames={playerNames}
-              />
-              <select
-                value={firstRound3OpponentR5Match || ""}
-                onChange={(e) => {
-                  if (e.target.value === "0") {
-                    setFirstRound3OpponentR5Match(null);
-                    setOpponents((prev) => {
-                      const newOpponents = { ...prev };
-                      newOpponents.player8[6] = null;
-                      newOpponents.player1[7] = null;
-                      newOpponents.player8[7] = null;
-                      return newOpponents;
-                    });
-                  } else {
-                    setFirstRound3OpponentR5Match(
-                      e.target.value === "" ? null : parseInt(e.target.value)
-                    );
-                  }
-                }}
-                className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
-              >
-                {getOpponentOptions(opponents.player8[3])}
               </select>
             </div>
           </div>
