@@ -1,27 +1,57 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { isDeterministic } from "../utils/gameUtils";
 
-const TableRow = memo(({ round, player1Display, player8Display, noteText }) => {
+const TableRow = memo(
+  ({
+    round,
+    player1Display,
+    player8Display,
+    noteText,
+    isSelected,
+    onRowClick,
+  }) => {
+    const modifiedPlayer1Display =
+      isSelected && player1Display && player1Display.props
+        ? React.cloneElement(player1Display, {
+            className: player1Display.props.className
+              .replace("text-emerald-300", "text-white")
+              .replace("text-indigo-400", "text-white"),
+          })
+        : player1Display;
 
-  return (
-    <tr
-      className={`${
-        isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"
-      } hover:bg-gray-800/90 transition-colors`}
-    >
-      <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
-        {round}
-      </td>
-      <td className="px-3 py-2 text-sm font-medium whitespace-nowrap text-emerald-300">
-        {player1Display}
-      </td>
-      <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
-        {player8Display}
-      </td>
-      <td className="px-3 py-2 text-sm text-gray-200">{noteText}</td>
-    </tr>
-  );
-});
+    const modifiedPlayer8Display =
+      isSelected && player8Display && player8Display.props
+        ? React.cloneElement(player8Display, {
+            className: player8Display.props.className
+              .replace("text-indigo-300", "text-white")
+              .replace("text-indigo-400", "text-white")
+              .replace("text-gray-400", "text-white"),
+          })
+        : player8Display;
+
+    return (
+      <tr
+        onClick={() => onRowClick(round)}
+        className={`${
+          isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"
+        } ${
+          isSelected ? "bg-emerald-900 border-l-4 border-emerald-600" : ""
+        } hover:bg-gray-800/90 transition-colors cursor-pointer`}
+      >
+        <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
+          {round}
+        </td>
+        <td className="px-3 py-2 text-sm font-medium whitespace-nowrap">
+          {modifiedPlayer1Display}
+        </td>
+        <td className="px-3 py-2 text-sm whitespace-nowrap">
+          {modifiedPlayer8Display}
+        </td>
+        <td className="px-3 py-2 text-sm text-gray-200">{noteText}</td>
+      </tr>
+    );
+  }
+);
 
 const PredictionsTable = memo(
   ({
@@ -32,6 +62,12 @@ const PredictionsTable = memo(
     t,
     getOpponentDisplay,
   }) => {
+    const [selectedRound, setSelectedRound] = useState(null);
+
+    const handleRowClick = (round) => {
+      setSelectedRound(selectedRound === round ? null : round);
+    };
+
     const getNoteText = (round) => {
       switch (round) {
         case 1:
@@ -75,19 +111,20 @@ const PredictionsTable = memo(
     const getCustomOpponentDisplay = (player, round) => {
       const display = getOpponentDisplay(player, round);
 
-      if (
-        player === "player1" &&
-        display &&
-        display.props &&
-        display.props.className.includes("text-indigo-300")
-      ) {
-        // Clone the element but with emerald-300 text color for your opponents
-        return React.cloneElement(display, {
-          className: display.props.className.replace(
-            "text-indigo-300",
-            "text-emerald-300"
-          ),
-        });
+      if (display && display.props) {
+        if (player === "player1") {
+          if (display.props.className.includes("text-indigo-300")) {
+            // For actual player names, make them emerald
+            return React.cloneElement(display, {
+              className: display.props.className.replace(
+                "text-indigo-300",
+                "text-emerald-300"
+              ),
+            });
+          } else if (display.props.className.includes("text-indigo-400")) {
+            return display;
+          }
+        }
       }
 
       return display;
@@ -125,6 +162,8 @@ const PredictionsTable = memo(
                     player1Display={getCustomOpponentDisplay("player1", round)}
                     player8Display={getOpponentDisplay("player8", round)}
                     noteText={getNoteText(round)}
+                    isSelected={selectedRound === round}
+                    onRowClick={handleRowClick}
                   />
                 )
               )}
