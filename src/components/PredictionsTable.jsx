@@ -10,6 +10,7 @@ const TableRow = memo(
     isSelected,
     onRowClick,
   }) => {
+    // Modify player displays to use white text when selected
     const modifiedPlayer1Display =
       isSelected && player1Display && player1Display.props
         ? React.cloneElement(player1Display, {
@@ -29,16 +30,24 @@ const TableRow = memo(
           })
         : player8Display;
 
+    // More prominent and GitHub-compatible highlight styling
     return (
       <tr
         onClick={() => onRowClick(round)}
-        className={`${
-          isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"
-        } ${
-          isSelected ? "bg-emerald-900 border-l-4 border-emerald-600" : ""
-        } hover:bg-gray-800/90 transition-colors cursor-pointer`}
+        className={`
+          border-b border-gray-800
+          ${isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"}
+          ${
+            isSelected ? "!bg-emerald-800 border-l-4 !border-l-emerald-500" : ""
+          }
+          hover:bg-gray-800 transition-colors cursor-pointer
+        `}
       >
-        <td className="px-3 py-2 text-sm text-gray-200 whitespace-nowrap">
+        <td
+          className={`px-3 py-2 text-sm whitespace-nowrap ${
+            isSelected ? "text-white" : "text-gray-200"
+          }`}
+        >
           {round}
         </td>
         <td className="px-3 py-2 text-sm font-medium whitespace-nowrap">
@@ -47,7 +56,13 @@ const TableRow = memo(
         <td className="px-3 py-2 text-sm whitespace-nowrap">
           {modifiedPlayer8Display}
         </td>
-        <td className="px-3 py-2 text-sm text-gray-200">{noteText}</td>
+        <td
+          className={`px-3 py-2 text-sm ${
+            isSelected ? "text-white" : "text-gray-200"
+          }`}
+        >
+          {noteText}
+        </td>
       </tr>
     );
   }
@@ -136,7 +151,7 @@ const PredictionsTable = memo(
           <h2 className="text-lg font-bold text-white">{t.predictions}</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700/50">
+          <table className="min-w-full border-collapse">
             <thead className="bg-gray-800/90">
               <tr>
                 <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
@@ -153,7 +168,7 @@ const PredictionsTable = memo(
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800/50">
+            <tbody>
               {Array.from({ length: currentRound }, (_, i) => i + 1).map(
                 (round) => (
                   <TableRow
