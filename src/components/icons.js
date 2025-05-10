@@ -1,0 +1,38 @@
+// Central location for all icons used in the application
+import {
+  FaCamera,
+  FaUser,
+  FaUsers,
+  FaCheck,
+  FaTimes,
+  FaArrowRight,
+  FaArrowLeft,
+  FaCog,
+  FaPaste,
+  FaQrcode,
+  FaSearch,
+  FaFileAlt,
+  FaFileImport,
+  FaFileImage,
+  FaFileUpload,
+  FaFileMedical,
+} from "react-icons/fa";
+
+export {
+  FaCamera,
+  FaUser,
+  FaUsers,
+  FaCheck,
+  FaTimes,
+  FaArrowRight,
+  FaArrowLeft,
+  FaCog,
+  FaPaste,
+  FaQrcode,
+  FaSearch,
+  FaFileAlt,
+  FaFileImport,
+  FaFileImage,
+  FaFileUpload,
+  FaFileMedical,
+};

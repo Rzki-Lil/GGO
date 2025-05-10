@@ -7,26 +7,12 @@ import {
   getFirstRound3Opponent,
 } from "../utils/gameUtils";
 
-const SelectedPlayer = React.memo(
-  ({ playerId, playerNames, className = "" }) => {
-    if (!playerId) return null;
-    return (
-      <div
-        className={`px-3 py-2 mb-2 text-sm font-medium text-white bg-indigo-600/50 rounded-lg border border-indigo-500/30 ${className}`}
-      >
-        <span>{playerNames[playerId]}</span>
-      </div>
-    );
-  }
-);
-
 const MatchInputs = ({
   opponents,
   setOpponents,
   playerNames,
   firstOpponentId,
   currentRound,
-  t,
   round3OpponentR5Match,
   setRound3OpponentR5Match,
   firstRound3OpponentR5Match,
@@ -44,14 +30,18 @@ const MatchInputs = ({
 
     return (
       <>
-        <option value="">{t.select}</option>
-        <option key={0} value={0} className="bg-red-800">
-          {playerNames[0]}
+        <option value={0} className="text-white">
+          Batal
         </option>
         {[1, 2, 3, 4, 5, 6, 7, 8]
-          .filter((i) => i !== playerNumber && !usedOpponents.has(i))
+          .filter((i) => {
+            if (i === playerNumber) return false;
+
+            if (i === round3OpponentR5Match) return true;
+            return !usedOpponents.has(i);
+          })
           .map((i) => (
-            <option key={i} value={i} className="bg-gray-700">
+            <option key={i} value={i} className="text-gray-200">
               {playerNames[i]}
             </option>
           ))}
@@ -68,20 +58,27 @@ const MatchInputs = ({
 
     return (
       <>
-        <option value="">{t.select}</option>
-        <option value="0" className="bg-red-800">
-          {playerNames[0]}
+        <option value={0} className="text-white">
+          Batal
         </option>
-        {[2, 3, 4, 5, 6, 7, 8].map((id) => {
-          if (id !== playerNumber && !usedOpponents.has(id)) {
-            return (
-              <option key={id} value={id} className="bg-gray-700">
-                {playerNames[id]}
-              </option>
-            );
-          }
-          return null;
-        })}
+        {[2, 3, 4, 5, 6, 7, 8]
+          .filter((i) => {
+            if (i === playerNumber || i === firstOpponentId) return false;
+
+            const currentSelection =
+              playerNumber === 1
+                ? opponents.player1[round]
+                : opponents.player8[round];
+
+            if (i === currentSelection) return true;
+
+            return !usedOpponents.has(i);
+          })
+          .map((i) => (
+            <option key={i} value={i} className="text-gray-200">
+              {playerNames[i]}
+            </option>
+          ))}
       </>
     );
   };
@@ -110,7 +107,9 @@ const MatchInputs = ({
           !firstRound3OpponentR5Match)
       ) {
         return (
-          <span className="font-medium text-indigo-400">{t.needInput}</span>
+          <span className="font-medium text-indigo-400">
+            Perlu input di atas ⬆️
+          </span>
         );
       }
 
@@ -120,37 +119,34 @@ const MatchInputs = ({
         (round === 5 && !opponents.player8[4] && player === "player1") ||
         (round === 5 && !opponents.player1[4] && player === "player8")
       ) {
-        return <span className="font-medium text-indigo-400">{t.waiting}</span>;
+        return (
+          <span className="font-medium text-indigo-400">Menunggu input...</span>
+        );
       }
 
-      return <span className="font-medium text-indigo-400">{t.predict}</span>;
+      return <span className="font-medium text-indigo-400">Prediksi...</span>;
     }
 
-    return <span className="text-gray-400">{t.notSet}</span>;
+    return <span className="text-gray-400">Belum diset</span>;
   };
 
   return (
     <div className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-violet-500/30 hover:shadow-violet-500/10 lg:col-span-2">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-white">{t.matchInputs}</h2>
+        <h2 className="text-lg font-bold text-white">Input Pertandingan</h2>
         <button
           onClick={resetMatchData}
           className="px-3 py-1 text-xs font-medium text-white transition-colors rounded-md shadow-md bg-red-700/90 hover:bg-red-600"
         >
-          {t.resetMatches}
+          Reset
         </button>
       </div>
 
-      {/* First Opponent Selector - Full Width Row */}
       <div className="w-full p-3 mb-4 transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 hover:border-violet-500/50">
         <h3 className="mb-3 text-base font-bold text-white">
-          {t.firstOpponent}
+          Lawan Pertama Kamu:
         </h3>
         <div className="w-full">
-          <SelectedPlayer
-            playerId={firstOpponentId}
-            playerNames={playerNames}
-          />
           <select
             value={firstOpponentId}
             onChange={(e) => handleFirstOpponentChange(e.target.value)}
@@ -165,7 +161,6 @@ const MatchInputs = ({
         </div>
       </div>
 
-      {/* Rounds 2 and 4 inputs in a separate flex container */}
       <div className="flex flex-wrap gap-4">
         {/* Rounds 2 and 4 inputs */}
         {[2, 4].map((round) => (
@@ -174,20 +169,16 @@ const MatchInputs = ({
             className="flex-1 min-w-[180px] p-3 bg-gray-800/90 border border-violet-500/30 rounded-lg shadow-lg hover:border-violet-500/50 transition-all"
           >
             <h3 className="mb-3 text-base font-bold text-white">
-              Round {round}
+              Ronde {round}
             </h3>
 
             <div className="space-y-3">
               <div className="group">
                 <label className="block mb-1 text-sm font-semibold text-indigo-200">
-                  {t.yourOpponent}
+                  Lawan Kamu
                 </label>
-                <SelectedPlayer
-                  playerId={opponents.player1[round]}
-                  playerNames={playerNames}
-                />
                 <select
-                  value={opponents.player1[round] || ""}
+                  value={opponents.player1[round] || 0}
                   onChange={(e) =>
                     handleOpponentChange("player1", round, e.target.value)
                   }
@@ -199,14 +190,10 @@ const MatchInputs = ({
 
               <div className="group">
                 <label className="block mb-1 text-sm font-semibold text-indigo-200">
-                  {playerNames[firstOpponentId]}'s {t.opponent}
+                  Lawan dari {playerNames[firstOpponentId]}
                 </label>
-                <SelectedPlayer
-                  playerId={opponents.player8[round]}
-                  playerNames={playerNames}
-                />
                 <select
-                  value={opponents.player8[round] || ""}
+                  value={opponents.player8[round] || 0}
                   onChange={(e) =>
                     handleOpponentChange("player8", round, e.target.value)
                   }
@@ -220,44 +207,70 @@ const MatchInputs = ({
         ))}
       </div>
 
-      {/* Round 6 Helpers - Only show the first helper */}
       <div className="grid grid-cols-1 gap-4 mt-4">
         {/* Your R6 Helper */}
         {opponents.player1[3] && (
           <div className="p-3 overflow-hidden transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 animate-fadeIn hover:border-violet-500/50">
-            <h3 className="mb-2 text-sm font-bold text-violet-300">
-              {t.r6Helper.you}
-            </h3>
+            <h3 className="mb-3 text-base font-bold text-white">Ronde 6 & 7</h3>
             <div className="space-y-2">
               <div className="text-sm text-gray-200">
-                {t.r6Helper.yourR3}{" "}
+                Lawan{" "}
                 <strong className="text-violet-200">
                   {playerNames[opponents.player1[3]]}
                 </strong>
-                {t.r6Helper.r5Match}
+                {" di Ronde 5"}
               </div>
-              <SelectedPlayer
-                playerId={round3OpponentR5Match}
-                playerNames={playerNames}
-              />
               <select
-                value={round3OpponentR5Match || ""}
+                value={round3OpponentR5Match || 0}
                 onChange={(e) => {
                   if (e.target.value === "0") {
                     setRound3OpponentR5Match(null);
-                    setFirstRound3OpponentR5Match(null); // Reset second helper when first helper is canceled
+                    setFirstRound3OpponentR5Match(null);
                     setOpponents((prev) => {
                       const newOpponents = { ...prev };
                       newOpponents.player1[6] = null;
-                      newOpponents.player8[6] = null; // Also reset opponent's R6 selection
+                      newOpponents.player8[6] = null;
                       newOpponents.player1[7] = null;
                       newOpponents.player8[7] = null;
                       return newOpponents;
                     });
                   } else {
-                    setRound3OpponentR5Match(
-                      e.target.value === "" ? null : parseInt(e.target.value)
-                    );
+                    const newValue = parseInt(e.target.value);
+                    setRound3OpponentR5Match(newValue);
+
+                    setOpponents((prev) => {
+                      const newOpponents = { ...prev };
+                      newOpponents.player1[6] = newValue;
+
+                      const usedOpponents = getAllUsedOpponents(
+                        prev,
+                        newValue,
+                        null
+                      );
+
+                      const availablePlayers = [2, 3, 4, 5, 6, 7, 8].filter(
+                        (id) =>
+                          id !== firstOpponentId &&
+                          id !== newValue &&
+                          !usedOpponents.has(id)
+                      );
+
+                      if (availablePlayers.length === 1) {
+                        newOpponents.player8[6] = availablePlayers[0];
+                        setFirstRound3OpponentR5Match(availablePlayers[0]);
+
+                        newOpponents.player1[7] = availablePlayers[0];
+                        newOpponents.player8[7] = newValue;
+                      } else {
+
+                        newOpponents.player8[6] = null;
+                        newOpponents.player1[7] = null;
+                        newOpponents.player8[7] = null;
+                        setFirstRound3OpponentR5Match(null);
+                      }
+
+                      return newOpponents;
+                    });
                   }
                 }}
                 className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
@@ -274,7 +287,6 @@ const MatchInputs = ({
         opponents={opponents}
         playerNames={playerNames}
         firstOpponentId={firstOpponentId}
-        t={t}
         getOpponentDisplay={getOpponentDisplay}
       />
     </div>
