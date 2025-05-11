@@ -68,31 +68,24 @@ const PlayersList = memo(
   }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
     const fileInputRef = useRef(null);
     const containerRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const modalRef = useRef(null);
     const dropZoneRef = useRef(null);
 
+    // Function to process an image (from file or clipboard)
     const processImage = async (imageData) => {
       if (!imageData) return;
 
-      if (imageData.size > 1048576) {
-        setErrorMessage(
-          "File size exceeds 1MB limit. Please select a smaller image."
-        );
-        return;
-      }
-
       setIsLoading(true);
       setErrorMessage("");
-      setSuccessMessage("");
-      setShowModal(false); 
+      setShowModal(false); // Close modal when processing starts
 
       try {
         let formData = new FormData();
 
+        // Handle different types of image data
         if (imageData instanceof File) {
           formData.append("image", imageData);
         } else if (imageData instanceof Blob) {
@@ -102,6 +95,7 @@ const PlayersList = memo(
           );
         }
 
+        // Send to Flask server for OCR processing
         const response = await fetch(
           "https://settled-modern-stinkbug.ngrok-free.app/ocr",
           {
@@ -134,30 +128,30 @@ const PlayersList = memo(
             }
           });
 
-          setSuccessMessage("Berhasil memuat nama pemain dari gambar");
-          setTimeout(() => setSuccessMessage(""), 5000); 
-          setErrorMessage(""); 
+          setErrorMessage(""); // Clear any errors
         } else {
-          setErrorMessage("Tidak ada nama pemain yang terdeteksi");
-          setTimeout(() => setErrorMessage(""), 5000);
+          setErrorMessage("No player names detected in the image");
         }
       } catch (error) {
         console.error("OCR processing error:", error);
         setErrorMessage(
-          "Error Proses Gambar, Pastikan Server Aktif."
+          "Error processing image. Make sure the server is running."
         );
       } finally {
         setIsLoading(false);
+        // Reset the file input to allow selecting the same file again
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
       }
     };
 
+    // Handle file selection
     const handleImageUpload = (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
+      // Only allow image files
       if (!file.type.startsWith("image/")) {
         setErrorMessage("Please select an image file");
         return;
@@ -166,10 +160,12 @@ const PlayersList = memo(
       processImage(file);
     };
 
+    // Handle paste event
     const handlePaste = (event) => {
       const clipboardItems = event.clipboardData?.items;
       if (!clipboardItems) return;
 
+      // Find image data in clipboard
       for (const item of clipboardItems) {
         if (item.type.startsWith("image/")) {
           const blob = item.getAsFile();
@@ -180,6 +176,7 @@ const PlayersList = memo(
       }
     };
 
+    // Handle drag and drop events
     const handleDragOver = (e) => {
       e.preventDefault();
       if (dropZoneRef.current) {
@@ -211,12 +208,14 @@ const PlayersList = memo(
       }
     };
 
+    // Close modal when clicking outside
     const handleOutsideClick = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         setShowModal(false);
       }
     };
 
+    // Add and remove the global paste event listener
     useEffect(() => {
       if (showModal) {
         document.addEventListener("mousedown", handleOutsideClick);
@@ -236,6 +235,7 @@ const PlayersList = memo(
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Pemain</h2>
 
+          {/* Changed camera icon to document scan icon */}
           <button
             onClick={() => setShowModal(true)}
             className={`p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors ${
@@ -248,6 +248,7 @@ const PlayersList = memo(
           </button>
         </div>
 
+        {/* Image Upload Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
             <div
@@ -290,9 +291,6 @@ const PlayersList = memo(
                   </kbd>{" "}
                   untuk paste screenshot
                 </p>
-                <p className="mt-2 text-xs text-center text-gray-400">
-                  Ukuran maksimum: 1MB
-                </p>
 
                 <input
                   type="file"
@@ -307,31 +305,14 @@ const PlayersList = memo(
           </div>
         )}
 
+        {/* Error message display */}
         {errorMessage && (
           <div className="p-2 mb-3 text-sm text-red-200 border rounded bg-red-900/50 border-red-500/50">
             {errorMessage}
           </div>
         )}
 
-        {successMessage && (
-          <div className="p-2 mb-3 text-sm text-green-200 border rounded bg-green-900/50 border-green-500/50">
-            <div className="flex items-center">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              {successMessage}
-            </div>
-          </div>
-        )}
-
+        {/* Loading indicator */}
         {isLoading && (
           <div className="flex items-center p-2 mb-3 text-sm border rounded bg-violet-900/30 border-violet-500/50 text-violet-200">
             <svg
