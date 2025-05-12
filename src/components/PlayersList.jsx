@@ -74,18 +74,16 @@ const PlayersList = memo(
     const modalRef = useRef(null);
     const dropZoneRef = useRef(null);
 
-    // Function to process an image (from file or clipboard)
     const processImage = async (imageData) => {
       if (!imageData) return;
 
       setIsLoading(true);
       setErrorMessage("");
-      setShowModal(false); // Close modal when processing starts
+      setShowModal(false);
 
       try {
         let formData = new FormData();
 
-        // Handle different types of image data
         if (imageData instanceof File) {
           formData.append("image", imageData);
         } else if (imageData instanceof Blob) {
@@ -95,7 +93,6 @@ const PlayersList = memo(
           );
         }
 
-        // Send to Flask server for OCR processing
         const response = await fetch(
           "https://settled-modern-stinkbug.ngrok-free.app/ocr",
           {
@@ -109,37 +106,43 @@ const PlayersList = memo(
 
         const result = await response.json();
 
+        if (!response.ok) {
+          if (response.status === 413) {
+            setErrorMessage(result.error);
+          } else if (result.error) {
+            setErrorMessage(result.error);
+          } else {
+            setErrorMessage("Terjadi kesalahan saat memproses gambar");
+          }
+          return;
+        }
+
         if (result.success && result.players && result.players.length > 0) {
-          // Update player names with OCR results
           const newNames = { ...playerNames };
 
-          // Process up to 7 players (for indices 2-8)
           result.players.slice(0, 7).forEach((player, index) => {
-            const playerId = index + 2; // Start from player 2
+            const playerId = index + 2;
             if (playerId <= 8) {
               newNames[playerId] = player.name.trim();
             }
           });
 
-          // Save all player names at once
           Object.entries(newNames).forEach(([id, name]) => {
             if (id >= 2 && id <= 8) {
               savePlayerName(parseInt(id), name);
             }
           });
 
-          setErrorMessage(""); // Clear any errors
+          setErrorMessage("");
         } else {
-          setErrorMessage("No player names detected in the image");
+          setErrorMessage("Tidak ada nama pemain yang terdeteksi dalam gambar");
         }
       } catch (error) {
         console.error("OCR processing error:", error);
-        setErrorMessage(
-          "Error processing image. Make sure the server is running."
-        );
+        setErrorMessage("Terjadi kesalahan saat menghubungi server OCR");
       } finally {
         setIsLoading(false);
-        // Reset the file input to allow selecting the same file again
+
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -208,14 +211,12 @@ const PlayersList = memo(
       }
     };
 
-    // Close modal when clicking outside
     const handleOutsideClick = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         setShowModal(false);
       }
     };
 
-    // Add and remove the global paste event listener
     useEffect(() => {
       if (showModal) {
         document.addEventListener("mousedown", handleOutsideClick);
@@ -235,7 +236,6 @@ const PlayersList = memo(
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Pemain</h2>
 
-          {/* Changed camera icon to document scan icon */}
           <button
             onClick={() => setShowModal(true)}
             className={`p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors ${
