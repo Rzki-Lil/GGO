@@ -2,7 +2,7 @@
   "name": "magic-chess-predictor",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rzki-lil.github.io/GGO",
+  "homepage": "https://ggo.rzkispot.live",
   "description": "GGO Tournament Predictor",
   "main": "index.js",
   "dependencies": {
