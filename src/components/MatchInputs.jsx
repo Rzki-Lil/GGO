@@ -89,7 +89,7 @@ const MatchInputs = ({
 
     if (opponent) {
       return (
-        <span className="font-medium text-indigo-300">
+        <span className="font-medium text-chess-orange-300">
           {playerNames[opponent]}
         </span>
       );
@@ -107,8 +107,8 @@ const MatchInputs = ({
           !firstRound3OpponentR5Match)
       ) {
         return (
-          <span className="font-medium text-indigo-400">
-            Perlu input di atas ⬆️
+          <span className="font-medium text-chess-orange-400">
+            Menunggu input... 
           </span>
         );
       }
@@ -120,29 +120,33 @@ const MatchInputs = ({
         (round === 5 && !opponents.player1[4] && player === "player8")
       ) {
         return (
-          <span className="font-medium text-indigo-400">Menunggu input...</span>
+          <span className="font-medium text-chess-orange-400">
+            Menunggu input...
+          </span>
         );
       }
 
-      return <span className="font-medium text-indigo-400">Prediksi...</span>;
+      return (
+        <span className="font-medium text-chess-orange-400">Menunggu input...</span>
+      );
     }
 
     return <span className="text-gray-400">Belum diset</span>;
   };
 
   return (
-    <div className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-violet-500/30 hover:shadow-violet-500/10 lg:col-span-2">
+    <div className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-chess-orange-500/30 hover:shadow-chess-orange-500/10 lg:col-span-2">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-white">Input Pertandingan</h2>
         <button
           onClick={resetMatchData}
-          className="px-3 py-1 text-xs font-medium text-white transition-colors rounded-md shadow-md bg-red-700/90 hover:bg-red-600"
+          className="px-3 py-2 text-sm font-medium text-gray-100 transition-colors bg-red-600 rounded-md hover:bg-red-500"
         >
           Reset
         </button>
       </div>
 
-      <div className="w-full p-3 mb-4 transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 hover:border-violet-500/50">
+      <div className="w-full p-3 mb-4 transition-all border border-gray-600 rounded-lg shadow-lg bg-gray-800/90 hover:border-chess-orange-500/50">
         <h3 className="mb-3 text-base font-bold text-white">
           Lawan Pertama Kamu:
         </h3>
@@ -150,7 +154,7 @@ const MatchInputs = ({
           <select
             value={firstOpponentId}
             onChange={(e) => handleFirstOpponentChange(e.target.value)}
-            className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
+            className="block w-full px-3 py-2 text-sm text-white transition-colors border border-gray-600 rounded-lg outline-none bg-gray-700/90 hover:border-chess-orange-500/50 focus:border-chess-orange-400"
           >
             {[2, 3, 4, 5, 6, 7, 8].map((id) => (
               <option key={id} value={id}>
@@ -166,7 +170,7 @@ const MatchInputs = ({
         {[2, 4].map((round) => (
           <div
             key={`input-r${round}`}
-            className="flex-1 min-w-[180px] p-3 bg-gray-800/90 border border-violet-500/30 rounded-lg shadow-lg hover:border-violet-500/50 transition-all"
+            className="flex-1 min-w-[180px] p-3 bg-gray-800/90 border border-gray-600 rounded-lg shadow-lg hover:border-chess-orange-500/50 transition-all"
           >
             <h3 className="mb-3 text-base font-bold text-white">
               Ronde {round}
@@ -174,7 +178,7 @@ const MatchInputs = ({
 
             <div className="space-y-3">
               <div className="group">
-                <label className="block mb-1 text-sm font-semibold text-indigo-200">
+                <label className="block mb-1 text-sm font-semibold text-chess-orange-200">
                   Lawan Kamu
                 </label>
                 <select
@@ -182,14 +186,14 @@ const MatchInputs = ({
                   onChange={(e) =>
                     handleOpponentChange("player1", round, e.target.value)
                   }
-                  className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
+                  className="block w-full px-3 py-2 text-sm text-white transition-colors border border-gray-600 rounded-lg outline-none bg-gray-700/90 hover:border-chess-orange-500/50 focus:border-chess-orange-400"
                 >
                   {getR24OpponentOptions(1, round)}
                 </select>
               </div>
 
               <div className="group">
-                <label className="block mb-1 text-sm font-semibold text-indigo-200">
+                <label className="block mb-1 text-sm font-semibold text-chess-orange-200">
                   Lawan dari {playerNames[firstOpponentId]}
                 </label>
                 <select
@@ -197,7 +201,7 @@ const MatchInputs = ({
                   onChange={(e) =>
                     handleOpponentChange("player8", round, e.target.value)
                   }
-                  className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
+                  className="block w-full px-3 py-2 text-sm text-white transition-colors border border-gray-600 rounded-lg outline-none bg-gray-700/90 hover:border-chess-orange-500/50 focus:border-chess-orange-400"
                 >
                   {getR24OpponentOptions(firstOpponentId, round)}
                 </select>
@@ -210,12 +214,12 @@ const MatchInputs = ({
       <div className="grid grid-cols-1 gap-4 mt-4">
         {/* Your R6 Helper */}
         {opponents.player1[3] && (
-          <div className="p-3 overflow-hidden transition-all border rounded-lg shadow-lg bg-gray-800/90 border-violet-500/30 animate-fadeIn hover:border-violet-500/50">
+          <div className="p-3 overflow-hidden transition-all border border-gray-600 rounded-lg shadow-lg bg-gray-800/90 animate-fadeIn hover:border-chess-orange-500/50">
             <h3 className="mb-3 text-base font-bold text-white">Ronde 6 & 7</h3>
             <div className="space-y-2">
               <div className="text-sm text-gray-200">
                 Lawan{" "}
-                <strong className="text-violet-200">
+                <strong className="text-chess-orange-200">
                   {playerNames[opponents.player1[3]]}
                 </strong>
                 {" di Ronde 5"}
@@ -262,7 +266,6 @@ const MatchInputs = ({
                         newOpponents.player1[7] = availablePlayers[0];
                         newOpponents.player8[7] = newValue;
                       } else {
-
                         newOpponents.player8[6] = null;
                         newOpponents.player1[7] = null;
                         newOpponents.player8[7] = null;
@@ -273,7 +276,7 @@ const MatchInputs = ({
                     });
                   }
                 }}
-                className="block w-full px-3 py-2 text-sm text-white transition-colors border rounded-lg outline-none bg-gray-700/90 border-violet-500/40 hover:border-violet-500 focus:border-violet-400"
+                className="block w-full px-3 py-2 text-sm text-white transition-colors border border-gray-600 rounded-lg outline-none bg-gray-700/90 hover:border-chess-orange-500/50 focus:border-chess-orange-400"
               >
                 {getOpponentOptions(opponents.player1[3])}
               </select>

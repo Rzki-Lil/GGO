@@ -15,20 +15,20 @@ const PlayerCard = memo(
     <div
       className={`p-2 transition-all duration-300 rounded-lg border shadow-lg ${
         isFirst
-          ? "bg-gradient-to-br from-violet-900/80 to-indigo-900/80 border-violet-500/50 hover:border-violet-400 hover:shadow-violet-500/20"
-          : "bg-gray-800/90 border-gray-600/50 hover:border-gray-500 hover:shadow-indigo-500/10"
+          ? "bg-gradient-to-br from-chess-orange-900/80 to-chess-orange-800/80 border-chess-orange-500/50 hover:border-chess-orange-400 hover:shadow-chess-orange-500/20"
+          : "bg-gray-800/90 border-gray-600/50 hover:border-chess-orange-500/50 hover:shadow-chess-orange-500/10"
       }`}
     >
       <div className="flex items-center">
         <div className="flex-1">
           {isFirst && (
-            <span className="text-xs font-semibold text-violet-300">
-              Lawan Pertama:
+            <span className="text-xs font-semibold text-chess-orange-300">
+              Lawan Pertama
             </span>
           )}
           <div
             className={`text-base font-medium cursor-pointer ${
-              isFirst ? "text-indigo-200" : "text-gray-300"
+              isFirst ? "text-chess-orange-200" : "text-gray-300"
             }`}
             onClick={onStartEdit}
           >
@@ -39,8 +39,8 @@ const PlayerCard = memo(
                 onChange={onChange}
                 className={`w-full p-1 text-base font-medium text-white border rounded outline-none ${
                   isFirst
-                    ? "bg-gray-700/90 border-violet-500/50 focus:border-violet-400"
-                    : "bg-gray-700 border-gray-600 focus:border-gray-500"
+                    ? "bg-gray-700/90 border-chess-orange-500/50 focus:border-chess-orange-400"
+                    : "bg-gray-700 border-gray-600 focus:border-chess-orange-400"
                 }`}
                 autoFocus
                 onBlur={onSave}
@@ -231,21 +231,35 @@ const PlayersList = memo(
     return (
       <div
         ref={containerRef}
-        className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-violet-500/30 hover:shadow-violet-500/10"
+        className="p-4 transition-all border rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-md border-chess-orange-500/30 hover:shadow-chess-orange-500/10"
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Pemain</h2>
 
-          <button
-            onClick={() => setShowModal(true)}
-            className={`p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={isLoading}
-            title="Scan dokumen untuk OCR nama pemain otomatis"
-          >
-            <FaFileImage size={16} className="text-white" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowModal(true)}
+              className={`p-2 rounded-md bg-chess-orange-600 hover:bg-chess-orange-500 transition-colors ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
+              title="Scan dokumen untuk OCR nama pemain otomatis"
+            >
+              <FaFileImage size={16} className="text-white" />
+            </button>
+
+            <button
+              onClick={() => {
+                [2, 3, 4, 5, 6, 7, 8].forEach((id) => {
+                  savePlayerName(id, `Pemain ${id}`);
+                });
+              }}
+              className="px-3 py-2 text-sm font-medium text-gray-100 transition-colors bg-red-600 rounded-md hover:bg-red-500"
+              title="Reset semua nama pemain"
+            >
+              Reset Nama
+            </button>
+          </div>
         </div>
 
         {/* Image Upload Modal */}
@@ -253,7 +267,7 @@ const PlayersList = memo(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
             <div
               ref={modalRef}
-              className="w-full max-w-md p-5 bg-gray-800 border rounded-lg shadow-xl border-violet-500/30"
+              className="w-full max-w-md p-5 bg-gray-800 border rounded-lg shadow-xl border-chess-orange-500/30"
             >
               <div className="flex justify-between mb-4">
                 <h3 className="text-lg font-medium text-white">
@@ -270,13 +284,13 @@ const PlayersList = memo(
               {/* Drop zone */}
               <div
                 ref={dropZoneRef}
-                className="flex flex-col items-center justify-center p-6 mb-4 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-violet-500/40 hover:border-violet-500/60"
+                className="flex flex-col items-center justify-center p-6 mb-4 transition-colors border-2 border-dashed rounded-lg cursor-pointer border-chess-orange-500/40 hover:border-chess-orange-500/60"
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <FaFileImage size={36} className="mb-3 text-violet-400" />
+                <FaFileImage size={36} className="mb-3 text-chess-orange-400" />
                 <p className="mb-2 text-sm text-center text-gray-300">
                   Klik atau seret gambar ke sini untuk scan nama pemain otomatis
                 </p>
@@ -314,7 +328,7 @@ const PlayersList = memo(
 
         {/* Loading indicator */}
         {isLoading && (
-          <div className="flex items-center p-2 mb-3 text-sm border rounded bg-violet-900/30 border-violet-500/50 text-violet-200">
+          <div className="flex items-center p-2 mb-3 text-sm border rounded bg-chess-orange-900/30 border-chess-orange-500/50 text-chess-orange-200">
             <svg
               className="w-4 h-4 mr-2 text-white animate-spin"
               xmlns="http://www.w3.org/2000/svg"
@@ -357,7 +371,7 @@ const PlayersList = memo(
           <div className="mt-2 text-center">
             <p className="text-xs italic text-gray-400">
               Klik untuk mengubah
-              <span className="ml-1 text-violet-400">•</span>
+              <span className="ml-1 text-chess-orange-400">•</span>
               <span className="ml-1 text-gray-400">Enter untuk lanjut</span>
             </p>
           </div>

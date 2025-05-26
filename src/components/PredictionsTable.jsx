@@ -27,9 +27,13 @@ const TableRow = memo(
         onClick={() => onRowClick(round)}
         className={`
           border-b border-gray-800
-          ${isDeterministic(round) ? "bg-violet-900/20" : "bg-gray-900/80"}
           ${
-            isSelected ? "!bg-emerald-800 border-l-4 !border-l-emerald-500" : ""
+            isDeterministic(round) ? "bg-chess-orange-900/20" : "bg-gray-900/80"
+          }
+          ${
+            isSelected
+              ? "!bg-chess-orange-800 border-l-4 !border-l-chess-orange-500"
+              : ""
           }
           hover:bg-gray-800 transition-colors cursor-pointer
         `}
@@ -75,7 +79,7 @@ const PredictionsTable = memo(
             return React.cloneElement(display, {
               className: display.props.className.replace(
                 "text-indigo-300",
-                "text-emerald-300"
+                "text-chess-orange-300"
               ),
             });
           } else if (display.props.className.includes("text-indigo-400")) {
@@ -88,21 +92,21 @@ const PredictionsTable = memo(
     };
 
     return (
-      <div className="mt-4 overflow-hidden border rounded-lg shadow-lg bg-gray-900/95 border-violet-500/30">
-        <div className="px-4 py-2 bg-gradient-to-r from-violet-900/80 via-indigo-900/80 to-purple-900/80">
+      <div className="mt-4 overflow-hidden border rounded-lg shadow-lg bg-gray-900/95 border-chess-orange-500/30">
+        <div className="px-4 py-2 bg-gradient-to-r from-chess-orange-900/80 via-chess-orange-800/80 to-chess-orange-700/80">
           <h2 className="text-lg font-bold text-white">Prediksi</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead className="bg-gray-800/90">
               <tr>
-                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
+                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-chess-orange-300">
                   Ronde
                 </th>
-                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-emerald-300">
+                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-chess-orange-300">
                   Lawan Kamu
                 </th>
-                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-indigo-300">
+                <th className="px-3 py-2 text-xs font-medium tracking-wider text-left text-chess-orange-300">
                   {playerNames[firstOpponentId]}
                 </th>
               </tr>

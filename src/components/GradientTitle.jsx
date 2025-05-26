@@ -3,22 +3,24 @@ import React, { useMemo } from "react";
 const GradientTitle = React.memo(() => {
   const titleStyle = useMemo(
     () => ({
-      backgroundImage: `linear-gradient(135deg, 
-      #4f46e5 0%,
-      #7c3aed 25%,
-      #2563eb 50%,
-      #8b5cf6 75%,
-      #4f46e5 100%
-    )`,
+      backgroundImage: `linear-gradient(135deg,
+        #f97316 0%,
+        #ea580c 30%,
+        #c2410c 50%,
+        #a200ff 70%,
+        #9a3412 100%
+      )`,
       backgroundSize: "200% 200%",
-      textShadow: "0 0 20px rgba(139, 92, 246, 0.2)",
+      textShadow: "0 0 10px rgba(249, 115, 22, 0.15)",
+      willChange: "background-position",
+      transform: "translate3d(0,0,0)",
     }),
     []
   );
 
   return (
     <div className="relative mt-8 mb-8 text-center select-none">
-      <h1 className="font-bold tracking-tight text-8xl font-pixel">
+      <h1 className="font-bold tracking-tight text-7xl font-pixel">
         <span
           className="relative inline-block text-transparent animate-gradient-slow bg-clip-text"
           style={titleStyle}
